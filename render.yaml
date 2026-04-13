@@ -2,7 +2,7 @@ services:
   - type: web
     name: qcrew
     runtime: node
-    buildCommand: node reset_db.js
+    buildCommand: npm install && node reset_db.js
     startCommand: node server.js
     envVars:
       - key: NODE_ENV
