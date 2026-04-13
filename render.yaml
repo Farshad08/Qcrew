@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: qcrew
+    runtime: node
+    buildCommand: node reset_db.js
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qcrew | Find a Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── City Modal ── */
+    .city-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .city-modal {
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      padding: 8px 20px 32px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 82vh;
+      overflow-y: auto;
+      animation: slideUp 0.28s cubic-bezier(.33, 1, .68, 1);
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(40px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 12px auto 18px;
+    }
+
+    .city-modal h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .city-search-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .city-search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .city-chip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 6px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--dark);
+      background: var(--off-white);
+    }
+
+    .city-chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    .city-chip.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .city-chip .city-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    /* ── GPS / City bar ── */
+    .top-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .city-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--navy);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .city-bar:hover {
+      opacity: 0.88;
+    }
+
+    .city-bar-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .city-bar-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--white);
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .city-bar-change {
+      margin-left: auto;
+      font-size: 0.72rem;
+      color: var(--primary-light);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .gps-btn {
+      background: var(--primary);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 10px 14px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .gps-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .gps-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .gps-btn.locating {
+      background: var(--navy);
+      animation: btnPulse 1s infinite;
+    }
+
+    @keyframes btnPulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.65
+      }
+    }
+
+    /* ── Nearby banner ── */
+    .nearby-banner {
+      background: linear-gradient(135deg, #022c1a, #064e38);
+      border: 1.5px solid var(--success);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nearby-banner-text {
+      flex: 1;
+    }
+
+    .nearby-banner-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .nearby-banner-sub {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .nearby-clear {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nearby-clear:hover {
+      color: white;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input {
+      padding-left: 40px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      pointer-events: none;
+    }
+
+    /* ── Shop cards ── */
+    .shops-count {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gray);
+      margin-bottom: 12px;
+    }
+
+    .shops-count span {
+      color: var(--dark);
+    }
+
+    .dist-badge {
+      background: linear-gradient(135deg, #022c1a, #064e38);
+      color: #4ade80;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .maps-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      margin-top: 6px;
+    }
+
+    .maps-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+        <span style="color:var(--primary)">Q</span>crew&nbsp;<span
+          style="color:rgba(255,255,255,0.45);font-weight:500;font-size:0.8rem;">Discover</span>
+      </div>
+      <button class="back-btn" onclick="handleLogout()">
+        <svg class="icon" style="width:18px;height:18px;" viewBox="0 0 24 24">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+        </svg>
+      </button>
+    </header>
+
+    <!-- City Selector Modal -->
+    <div class="city-overlay" id="cityOverlay" style="display:none;">
+      <div class="city-modal">
+        <div class="modal-handle"></div>
+        <h3>📍 Select Your City</h3>
+        <input type="text" class="city-search-input" id="citySearchInput" placeholder="Search city…">
+        <div class="city-grid" id="cityGrid"></div>
+      </div>
+    </div>
+
+    <main class="main-content" style="padding-top:16px;">
+      <!-- Greeting -->
+      <div>
+        <h2 style="font-size:1.3rem;">Hey, <span id="userName" class="text-primary"></span> 👋</h2>
+        <p style="margin-top:2px;">Find a barber near you</p>
+      </div>
+
+      <!-- Top bar: City + GPS -->
+      <div class="top-bar" id="topBar" style="display:none;">
+        <div class="city-bar" onclick="showCityModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <div style="min-width:0;">
+            <div class="city-bar-label">Showing</div>
+            <div class="city-bar-name" id="cityBarName">All cities</div>
+          </div>
+          <span class="city-bar-change">▾</span>
+        </div>
+        <button class="gps-btn" id="gpsBtn" onclick="requestLocation()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+          </svg>
+          Nearby
+        </button>
+      </div>
+
+      <!-- Nearby banner (shown when GPS active) -->
+      <div class="nearby-banner" id="nearbyBanner" style="display:none;">
+        <span style="font-size:1.4rem;">📡</span>
+        <div class="nearby-banner-text">
+          <div class="nearby-banner-title">Showing nearest shops</div>
+          <div class="nearby-banner-sub" id="nearbyBannerSub">Sorted by distance from your location</div>
+        </div>
+        <span class="nearby-clear" onclick="clearLocation()">✕ Clear</span>
+      </div>
+
+      <!-- Search -->
+      <div class="search-wrap">
+        <svg class="search-icon icon" style="width:16px;height:16px;" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+        <input type="text" id="shopSearch" placeholder="Search by name or area…">
+      </div>
+
+      <div id="shopsCount" class="shops-count" style="display:none;"></div>
+      <div id="shopList">
+        <p style="text-align:center;color:var(--gray);padding:48px 0;">Loading shops…</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const user = getUser();
+    if (user) document.getElementById('userName').textContent = user.name.split(' ')[0];
+
+    let allShops = [], selectedCity = '', userLat = null, userLng = null, nearbyMode = false;
+
+    const CITY_META = {
+      'Mumbai': { icon: '🏙️' }, 'Delhi': { icon: '🏛️' },
+      'Bangalore': { icon: '🌳' }, 'Chennai': { icon: '🌊' },
+      'Hyderabad': { icon: '💎' }, 'Kolkata': { icon: '🎨' },
+      'Pune': { icon: '🎓' }, 'Jaipur': { icon: '🏰' },
+      'Ahmedabad': { icon: '🏗️' },
+      'Kochi': { icon: '🌴' }, 'Thiruvananthapuram': { icon: '🏛️' },
+      'Kozhikode': { icon: '⛵' }, 'Thrissur': { icon: '🎭' },
+      'Palakkad': { icon: '🌾' },
+    };
+
+    /* ── Haversine distance (km) ── */
+    function haversine(lat1, lng1, lat2, lng2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLng = (lng2 - lng1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    function fmtDist(km) {
+      return km < 1 ? `${Math.round(km * 1000)}m away` : `${km.toFixed(1)} km away`;
+    }
+
+    /* ── GPS ── */
+    function requestLocation() {
+      const btn = document.getElementById('gpsBtn');
+      btn.disabled = true; btn.classList.add('locating'); btn.textContent = '⏳ Locating…';
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          nearbyMode = true;
+          selectedCity = ''; // clear city filter
+          document.getElementById('cityBarName').textContent = 'Nearby';
+          document.getElementById('nearbyBanner').style.display = 'flex';
+          document.getElementById('nearbyBannerSub').textContent =
+            `📍 ${userLat.toFixed(4)}°N, ${userLng.toFixed(4)}°E`;
+          btn.disabled = false; btn.classList.remove('locating');
+          btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> 📡 Active`;
+          filterAndRender();
+        },
+        err => {
+          btn.disabled = false; btn.classList.remove('locating');
+          btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Nearby`;
+          alert(`Could not get location: ${err.message}\n\nPlease allow location access in your browser.`);
+        },
+        { timeout: 10000, maximumAge: 60000 }
+      );
+    }
+
+    function clearLocation() {
+      userLat = null; userLng = null; nearbyMode = false;
+      document.getElementById('nearbyBanner').style.display = 'none';
+      document.getElementById('gpsBtn').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Nearby`;
+      filterAndRender();
+    }
+
+    /* ── City modal ── */
+    function showCityModal() { document.getElementById('cityOverlay').style.display = 'flex'; }
+    function hideCityModal() { document.getElementById('cityOverlay').style.display = 'none'; }
+
+    function buildCityGrid(cities, filter = '') {
+      const grid = document.getElementById('cityGrid');
+      const f = filter.toLowerCase();
+      const filtered = cities.filter(c => c.toLowerCase().includes(f));
+      grid.innerHTML = filtered.map(city => {
+        const m = CITY_META[city] || { icon: '📍' };
+        return `<div class="city-chip ${city === selectedCity ? 'active' : ''}" onclick="selectCity('${city}')">
+          <span class="city-icon">${m.icon}</span>${city}
+        </div>`;
+      }).join('');
+    }
+
+    function selectCity(city) {
+      selectedCity = city; nearbyMode = false;
+      clearLocation();
+      localStorage.setItem('qcrew_city', city);
+      document.getElementById('cityBarName').textContent = city;
+      hideCityModal();
+      filterAndRender();
+    }
+
+    document.getElementById('citySearchInput').addEventListener('input', e => {
+      const cities = [...new Set(allShops.map(s => s.city).filter(Boolean))].sort();
+      buildCityGrid(cities, e.target.value);
+    });
+    document.getElementById('cityOverlay').addEventListener('click', e => {
+      if (e.target === document.getElementById('cityOverlay') && selectedCity) hideCityModal();
+    });
+
+    /* ── Load shops ── */
+    async function loadShops() {
+      const data = await fetchShops();
+      if (data && data.success) {
+        allShops = data.shops;
+        const cities = [...new Set(allShops.map(s => s.city).filter(Boolean))].sort();
+        buildCityGrid(cities);
+        document.getElementById('topBar').style.display = 'grid';
+
+        const saved = localStorage.getItem('qcrew_city');
+        if (saved && allShops.some(s => s.city === saved)) {
+          selectedCity = saved;
+          document.getElementById('cityBarName').textContent = saved;
+          hideCityModal();
+          filterAndRender();
+        } else {
+          showCityModal();
+        }
+      } else {
+        renderShops([]);
+      }
+    }
+
+    function filterAndRender() {
+      const term = document.getElementById('shopSearch').value.toLowerCase();
+      let filtered = allShops;
+
+      if (nearbyMode && userLat !== null) {
+        // Attach distance, sort by it
+        filtered = filtered
+          .filter(s => s.lat && s.lng)
+          .map(s => ({ ...s, dist: haversine(userLat, userLng, s.lat, s.lng) }))
+          .sort((a, b) => a.dist - b.dist);
+      } else if (selectedCity) {
+        filtered = filtered.filter(s => s.city === selectedCity);
+      }
+
+      if (term) filtered = filtered.filter(s =>
+        s.name.toLowerCase().includes(term) || s.location.toLowerCase().includes(term)
+      );
+
+      renderShops(filtered);
+    }
+
+    function renderShops(shops) {
+      const el = document.getElementById('shopList');
+      const cnt = document.getElementById('shopsCount');
+
+      if (shops.length > 0) {
+        cnt.style.display = 'block';
+        const label = nearbyMode ? 'nearest shops' : `shops${selectedCity ? ` in ${selectedCity}` : ''}`;
+        cnt.innerHTML = `<span>${shops.length}</span> ${label} found`;
+
+        el.innerHTML = shops.map(shop => {
+          const distBadge = (nearbyMode && shop.dist !== undefined)
+            ? `<span class="dist-badge">📍 ${fmtDist(shop.dist)}</span>`
+            : '';
+          const mapsUrl = (shop.lat && shop.lng)
+            ? `https://www.google.com/maps/search/?api=1&query=${shop.lat},${shop.lng}`
+            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shop.name + ' ' + shop.location)}`;
+
+          return `<div class="shop-card" onclick="window.location.href='shop.html?id=${shop.id}&name=${encodeURIComponent(shop.name)}'">
+            <div style="position:relative;">
+              <img src="${shop.image_url}" alt="${shop.name}" class="shop-img">
+              <span class="shop-badge badge-open" style="position:absolute;top:10px;left:10px;">✓ Open</span>
+              ${distBadge ? `<span style="position:absolute;top:10px;right:10px;" class="dist-badge">${nearbyMode ? fmtDist(shop.dist) : ''}</span>` : ''}
+            </div>
+            <div class="shop-body">
+              <div class="shop-title">${shop.name}</div>
+              <div class="shop-loc">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                ${shop.location}
+              </div>
+              <div class="shop-meta">
+                ${shop.city ? `<span class="shop-badge badge-city">📍 ${shop.city}</span>` : ''}
+                <span class="shop-badge badge-wait">~20 min avg</span>
+              </div>
+              <a class="maps-link" href="${mapsUrl}" target="_blank" onclick="event.stopPropagation()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Open in Maps
+              </a>
+            </div>
+          </div>`;
+        }).join('');
+      } else {
+        cnt.style.display = 'none';
+        el.innerHTML = `<div style="text-align:center;padding:48px 20px;">
+          <div style="font-size:3rem;margin-bottom:12px;">🔍</div>
+          <h3 style="color:var(--dark);margin-bottom:6px;">No shops found</h3>
+          <p>Try a different city, or use GPS to find nearby shops</p>
+          <button class="btn btn-primary" style="margin-top:16px;width:auto;padding:10px 24px;font-size:0.85rem;" onclick="requestLocation()">
+            📡 Use My Location
+          </button>
+        </div>`;
+      }
+    }
+
+    document.getElementById('shopSearch').addEventListener('input', filterAndRender);
+    loadShops();
+  </script>
+</body>
+
+</html>

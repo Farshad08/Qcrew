@@ -1,0 +1,12 @@
+node_modules/
+qcrew.db
+*.db
+*.sqlite
+npm-debug.log
+.env
+shops_dump.json
+users.json
+queue.json
+queue_schema.json
+out.txt
+debug.txt

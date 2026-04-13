@@ -1,0 +1,4 @@
+Qcrew multi-shop server running on http://localhost:3000
+Connected to the SQLite database.
+Database tables ensured.
+Done running 

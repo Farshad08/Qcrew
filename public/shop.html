@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qcrew | Book a Slot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .shop-hero {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      background: var(--navy);
+    }
+
+    .shop-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+
+    .shop-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(26, 28, 43, 1) 0%, rgba(26, 28, 43, 0.3) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 18px 20px;
+    }
+
+    .shop-hero-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .shop-hero-loc {
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ── Info bar ── */
+    .info-bar {
+      display: flex;
+      gap: 10px;
+      background: var(--navy);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .info-bar-item {
+      flex: 1;
+      text-align: center;
+    }
+
+    .info-bar-val {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .info-bar-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+
+    .info-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ── Service tiles ── */
+    .service-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .service-tile {
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: var(--white);
+      text-align: center;
+    }
+
+    .service-tile:hover {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    .service-tile.selected {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .service-icon {
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+
+    .service-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .service-dur {
+      font-size: 0.7rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .service-price {
+      font-size: 0.7rem;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    /* ── Date Selector ── */
+    .date-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .date-strip::-webkit-scrollbar { display: none; }
+
+    .date-chip {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: var(--white);
+      min-width: 56px;
+    }
+
+    .date-chip:hover { border-color: var(--primary); }
+
+    .date-chip.active {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .date-chip .dc-day {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray);
+    }
+
+    .date-chip.active .dc-day { color: rgba(255,255,255,0.75); }
+
+    .date-chip .dc-date {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--dark);
+    }
+
+    .date-chip.active .dc-date { color: var(--white); }
+
+    /* ── Slot Grid ── */
+    .slot-legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: var(--gray);
+      font-weight: 600;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .slot-hour-group {
+      margin-bottom: 10px;
+    }
+
+    .slot-hour-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .slot-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .slot-chip {
+      flex: 0 0 calc(50% - 4px);
+      padding: 11px 8px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--white);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.17s;
+      position: relative;
+    }
+
+    .slot-chip:hover:not(.booked):not(.lunch):not(.past) {
+      border-color: var(--primary);
+      background: var(--primary-glow);
+    }
+
+    .slot-chip.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: white;
+    }
+
+    .slot-chip.booked {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      cursor: not-allowed;
+      opacity: 0.75;
+    }
+
+    .slot-chip.lunch {
+      background: var(--off-white);
+      border-color: var(--border);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .slot-chip.past {
+      background: var(--off-white);
+      border-color: var(--border);
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .slot-time {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: inherit;
+    }
+
+    .slot-chip.booked .slot-time { color: #ef4444; }
+    .slot-chip.lunch .slot-time { color: var(--gray); }
+    .slot-chip.past .slot-time { color: var(--gray); }
+
+    .slot-status {
+      font-size: 0.62rem;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .slot-chip.selected .slot-status { color: rgba(255,255,255,0.8); }
+    .slot-chip.booked .slot-status { color: #ef4444; }
+    .slot-chip.lunch .slot-status { color: var(--gray); }
+    .slot-chip.past .slot-status { color: var(--gray); }
+
+    /* ── Sticky book bar ── */
+    .book-cta-bar {
+      position: sticky;
+      bottom: 0;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      padding: 12px 20px 20px;
+    }
+
+    .slot-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      background: var(--primary-glow);
+      border: 1.5px solid var(--primary);
+      border-radius: 10px;
+    }
+
+    .slot-summary-label {
+      font-size: 0.8rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .slot-summary-val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .loading-slots {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--gray);
+      font-size: 0.88rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header"
+      style="position:absolute;top:0;left:0;right:0;background:transparent;box-shadow:none;z-index:10;">
+      <button class="back-btn" style="background:rgba(0,0,0,0.45);" onclick="window.location.href='customer.html'">
+        <svg class="icon" style="width:18px;height:18px;" viewBox="0 0 24 24">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="status-pill status-serving" style="background:rgba(34,197,94,0.15);color:#22C55E;font-size:0.7rem;">
+          🕘 9AM – 9PM
+        </span>
+      </div>
+    </header>
+
+    <!-- Shop Hero -->
+    <div class="shop-hero" id="shopHero">
+      <img id="shopHeroImg" src="https://images.unsplash.com/photo-1585747860113-1f3c3a4f61fb?w=800&q=80" alt="Shop">
+      <div class="shop-hero-overlay">
+        <div class="shop-hero-name" id="shopHeroName">Loading…</div>
+        <div class="shop-hero-loc">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span id="shopHeroLoc"></span>
+        </div>
+      </div>
+    </div>
+
+    <main class="main-content" style="padding-bottom:110px;">
+
+      <!-- Info bar -->
+      <div class="info-bar">
+        <div class="info-bar-item">
+          <div class="info-bar-val">9AM</div>
+          <div class="info-bar-label">Opens</div>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-bar-item">
+          <div class="info-bar-val">1–2PM</div>
+          <div class="info-bar-label">Lunch Break</div>
+        </div>
+        <div class="info-divider"></div>
+        <div class="info-bar-item">
+          <div class="info-bar-val">9PM</div>
+          <div class="info-bar-label">Closes</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Choose Service -->
+      <div>
+        <div class="section-hdr">
+          <h3>1. Choose Service</h3>
+        </div>
+        <div class="service-grid" id="serviceGrid">
+          <div class="service-tile" data-service="Haircut" data-dur="30" onclick="selectService(this)">
+            <div class="service-icon">✂️</div>
+            <div class="service-name">Haircut</div>
+            <div class="service-dur">⏱ 30 min</div>
+            <div class="service-price">₹150</div>
+          </div>
+          <div class="service-tile" data-service="Shave" data-dur="60" onclick="selectService(this)">
+            <div class="service-icon">🪒</div>
+            <div class="service-name">Shave</div>
+            <div class="service-dur">⏱ 1 hour</div>
+            <div class="service-price">₹100</div>
+          </div>
+          <div class="service-tile" data-service="Haircut & Shave" data-dur="45" onclick="selectService(this)">
+            <div class="service-icon">💈</div>
+            <div class="service-name">Haircut &amp; Shave</div>
+            <div class="service-dur">⏱ 45 min</div>
+            <div class="service-price">₹220</div>
+          </div>
+          <div class="service-tile" data-service="Beard Trim" data-dur="60" onclick="selectService(this)">
+            <div class="service-icon">🧔</div>
+            <div class="service-name">Beard Trim</div>
+            <div class="service-dur">⏱ 1 hour</div>
+            <div class="service-price">₹80</div>
+          </div>
+          <div class="service-tile" data-service="Hair Colour" data-dur="60" onclick="selectService(this)">
+            <div class="service-icon">🎨</div>
+            <div class="service-name">Hair Colour</div>
+            <div class="service-dur">⏱ 1 hour</div>
+            <div class="service-price">₹350</div>
+          </div>
+          <div class="service-tile" data-service="Head Massage" data-dur="60" onclick="selectService(this)">
+            <div class="service-icon">💆</div>
+            <div class="service-name">Head Massage</div>
+            <div class="service-dur">⏱ 1 hour</div>
+            <div class="service-price">₹200</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Pick Date -->
+      <div id="pickDateSection" style="display:none;">
+        <div class="section-hdr">
+          <h3>2. Pick a Date</h3>
+        </div>
+        <div class="date-strip" id="dateStrip"></div>
+      </div>
+
+      <!-- Step 3: Pick Time Slot -->
+      <div id="pickSlotSection" style="display:none;">
+        <div class="section-hdr">
+          <h3>3. Pick a Time Slot</h3>
+          <span id="slotDurNote" style="font-size:0.78rem;color:var(--primary);font-weight:700;"></span>
+        </div>
+
+        <!-- Legend -->
+        <div class="slot-legend">
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--white);border:2px solid var(--border);"></div>
+            Available
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--primary);"></div>
+            Selected
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:#fef2f2;border:2px solid #fca5a5;"></div>
+            Booked
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background:var(--off-white);border:2px solid var(--border);"></div>
+            Unavailable
+          </div>
+        </div>
+
+        <div id="slotGrid">
+          <div class="loading-slots"><span class="spinner"></span> Loading slots…</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Sticky CTA bar -->
+    <div class="book-cta-bar" id="bookCtaBar">
+      <div class="slot-summary" id="slotSummary" style="display:none;">
+        <div>
+          <div class="slot-summary-label">Selected slot</div>
+          <div class="slot-summary-val" id="slotSummaryText">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="slot-summary-label">Duration</div>
+          <div class="slot-summary-val" id="slotDurText">—</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="font-size:1rem;padding:16px;" id="bookBtn" onclick="confirmBooking()">
+        ✂️ Book a Slot
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const user = getUser();
+    const params = new URLSearchParams(window.location.search);
+    const shopId = params.get('id');
+    const shopName = params.get('name') || 'Shop';
+
+    if (!shopId) window.location.href = 'customer.html';
+
+    document.getElementById('shopHeroName').textContent = shopName;
+    document.title = `Qcrew | ${shopName}`;
+
+    // ── Service durations ──
+    const SERVICE_DURATIONS = {
+      'Haircut': 30,
+      'Haircut & Shave': 45,
+    };
+    function getDuration(service) {
+      return SERVICE_DURATIONS[service] || 60;
+    }
+
+    let selectedService = '', selectedDuration = 0, selectedDate = '', selectedSlot = '', selectedTile = null;
+    let bookedSlots = []; // array of {slot_time, slot_duration} from server
+
+    // ── Load shop info ──
+    async function loadShopInfo() {
+      try {
+        const res = await fetch(`/api/shops/${shopId}`);
+        const data = await res.json();
+        if (data.success && data.shop) {
+          document.getElementById('shopHeroLoc').textContent = data.shop.location || '';
+          if (data.shop.image_url) document.getElementById('shopHeroImg').src = data.shop.image_url;
+        }
+      } catch { }
+    }
+
+    // ── Service selection ──
+    function selectService(el) {
+      if (selectedTile) selectedTile.classList.remove('selected');
+      el.classList.add('selected');
+      selectedTile = el;
+      selectedService = el.dataset.service;
+      selectedDuration = parseInt(el.dataset.dur);
+      // Show date picker
+      buildDateStrip();
+      document.getElementById('pickDateSection').style.display = 'block';
+      document.getElementById('pickSlotSection').style.display = 'none';
+      selectedSlot = '';
+      updateCtaBar();
+      document.getElementById('pickDateSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ── Date strip (today + 6 days) ──
+    function buildDateStrip() {
+      const strip = document.getElementById('dateStrip');
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const today = new Date();
+      let html = '';
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const iso = d.toISOString().split('T')[0];
+        const dayLabel = i === 0 ? 'Today' : i === 1 ? 'Tmrw' : days[d.getDay()];
+        const isActive = iso === (selectedDate || today.toISOString().split('T')[0]);
+        html += `<div class="date-chip ${isActive ? 'active' : ''}" onclick="selectDate('${iso}', this)">
+          <div class="dc-day">${dayLabel}</div>
+          <div class="dc-date">${d.getDate()}</div>
+        </div>`;
+      }
+      strip.innerHTML = html;
+      // Auto-select today if none
+      if (!selectedDate) {
+        selectedDate = today.toISOString().split('T')[0];
+        loadSlotsForDate();
+      }
+    }
+
+    function selectDate(iso, el) {
+      selectedDate = iso;
+      selectedSlot = '';
+      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('pickSlotSection').style.display = 'block';
+      loadSlotsForDate();
+      updateCtaBar();
+    }
+
+    // ── Load booked slots from server ──
+    async function loadSlotsForDate() {
+      document.getElementById('slotGrid').innerHTML = '<div class="loading-slots"><span class="spinner"></span> Loading slots…</div>';
+      document.getElementById('pickSlotSection').style.display = 'block';
+      document.getElementById('slotDurNote').textContent = `${selectedDuration} min per slot`;
+      try {
+        const res = await fetch(`/api/slots?shop_id=${shopId}&date=${selectedDate}`);
+        const data = await res.json();
+        bookedSlots = data.success ? data.bookings : [];
+      } catch {
+        bookedSlots = [];
+      }
+      renderSlotGrid();
+    }
+
+    // ── Slot generation ──
+    // Shop: 9:00 - 13:00, break 13:00-14:00, then 14:00 - 21:00
+    // Slots every 30 minutes
+    function generateSlots() {
+      const slots = [];
+      // Morning: 9:00 to 12:30 (30-min increments, last start = 12:30 which ends at 13:00)
+      for (let h = 9; h < 13; h++) {
+        slots.push({ h, m: 0 });
+        slots.push({ h, m: 30 });
+      }
+      // Afternoon: 14:00 to 20:30 (last start 20:30 ends at 21:00)
+      for (let h = 14; h <= 20; h++) {
+        slots.push({ h, m: 0 });
+        if (h < 20) slots.push({ h, m: 30 });
+        // At h=20: only 20:00 and 20:30 (20:30 + 30min = 21:00 which is closing)
+        if (h === 20) slots.push({ h, m: 30 });
+      }
+      return slots;
+    }
+
+    function fmtTime(h, m) {
+      const period = h >= 12 ? 'PM' : 'AM';
+      const hh = h > 12 ? h - 12 : h === 0 ? 12 : h;
+      return `${hh}:${m === 0 ? '00' : m} ${period}`;
+    }
+
+    function isSlotBooked(h, m) {
+      // A slot is booked if any existing booking overlaps with [slotStart, slotStart + selectedDuration)
+      const slotStartMins = h * 60 + m;
+      const slotEndMins = slotStartMins + selectedDuration;
+
+      return bookedSlots.some(b => {
+        const [bDate, bTime] = b.slot_time.split(' ');
+        if (bDate !== selectedDate) return false;
+        const [bH, bM] = bTime.split(':').map(Number);
+        const bStart = bH * 60 + bM;
+        const bEnd = bStart + (b.slot_duration || 30);
+        // Overlap check
+        return slotStartMins < bEnd && slotEndMins > bStart;
+      });
+    }
+
+    function isPast(h, m) {
+      const today = new Date().toISOString().split('T')[0];
+      if (selectedDate > today) return false;
+      if (selectedDate < today) return true;
+      const now = new Date();
+      const nowMins = now.getHours() * 60 + now.getMinutes();
+      return (h * 60 + m) <= nowMins;
+    }
+
+    function renderSlotGrid() {
+      const allSlots = generateSlots();
+      // Group by hour for display
+      const groups = {};
+      allSlots.forEach(s => {
+        if (!groups[s.h]) groups[s.h] = [];
+        groups[s.h].push(s);
+      });
+
+      let html = '';
+
+      // Morning
+      html += `<div style="font-size:0.8rem;font-weight:700;color:var(--gray);margin-bottom:4px;margin-top:2px;">☀️ Morning</div>`;
+      for (let h = 9; h <= 12; h++) {
+        if (!groups[h]) continue;
+        html += `<div class="slot-hour-group">
+          <div class="slot-hour-label">${fmtTime(h, 0)} – ${fmtTime(h, 59)}</div>
+          <div class="slot-row">`;
+        groups[h].forEach(s => {
+          const booked = isSlotBooked(s.h, s.m);
+          const past = isPast(s.h, s.m);
+          const isSelected = selectedSlot === `${s.h}:${s.m < 10 ? '0' + s.m : s.m}`;
+          const cls = booked ? 'booked' : past ? 'past' : isSelected ? 'selected' : '';
+          const statusLabel = booked ? '🔴 Booked' : past ? 'Past' : isSelected ? '✓ Selected' : 'Available';
+          const endH = Math.floor((s.h * 60 + s.m + selectedDuration) / 60);
+          const endM = (s.h * 60 + s.m + selectedDuration) % 60;
+          html += `<div class="slot-chip ${cls}" onclick="${booked || past ? '' : `pickSlot(${s.h},${s.m},this)`}" title="Ends at ${fmtTime(endH, endM)}">
+            <div class="slot-time">${fmtTime(s.h, s.m)}</div>
+            <div class="slot-status">${statusLabel}</div>
+          </div>`;
+        });
+        html += `</div></div>`;
+      }
+
+      // Lunch break
+      html += `<div style="background:var(--off-white);border:1.5px dashed var(--border);border-radius:10px;padding:10px 14px;text-align:center;margin:4px 0 10px;">
+        ☕ <span style="font-size:0.8rem;font-weight:700;color:var(--gray);">Lunch Break — 1:00 PM to 2:00 PM</span>
+      </div>`;
+
+      // Afternoon
+      html += `<div style="font-size:0.8rem;font-weight:700;color:var(--gray);margin-bottom:4px;">🌆 Afternoon & Evening</div>`;
+      for (let h = 14; h <= 20; h++) {
+        if (!groups[h]) continue;
+        html += `<div class="slot-hour-group">
+          <div class="slot-hour-label">${fmtTime(h, 0)} – ${fmtTime(h === 20 ? 21 : h, h === 20 ? 0 : 59)}</div>
+          <div class="slot-row">`;
+        groups[h].forEach(s => {
+          const booked = isSlotBooked(s.h, s.m);
+          const past = isPast(s.h, s.m);
+          const isSelected = selectedSlot === `${s.h}:${s.m < 10 ? '0' + s.m : s.m}`;
+          const cls = booked ? 'booked' : past ? 'past' : isSelected ? 'selected' : '';
+          const statusLabel = booked ? '🔴 Booked' : past ? 'Past' : isSelected ? '✓ Selected' : 'Available';
+          const endH = Math.floor((s.h * 60 + s.m + selectedDuration) / 60);
+          const endM = (s.h * 60 + s.m + selectedDuration) % 60;
+          html += `<div class="slot-chip ${cls}" onclick="${booked || past ? '' : `pickSlot(${s.h},${s.m},this)`}" title="Ends at ${fmtTime(endH, endM)}">
+            <div class="slot-time">${fmtTime(s.h, s.m)}</div>
+            <div class="slot-status">${statusLabel}</div>
+          </div>`;
+        });
+        html += `</div></div>`;
+      }
+
+      document.getElementById('slotGrid').innerHTML = html;
+    }
+
+    // ── Pick a slot ──
+    function pickSlot(h, m, el) {
+      // Deselect all
+      document.querySelectorAll('.slot-chip.selected').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.slot-status').textContent = 'Available';
+      });
+      el.classList.add('selected');
+      el.querySelector('.slot-status').textContent = '✓ Selected';
+      selectedSlot = `${h}:${m < 10 ? '0' + m : m}`;
+      updateCtaBar();
+    }
+
+    function updateCtaBar() {
+      const btn = document.getElementById('bookBtn');
+      const summary = document.getElementById('slotSummary');
+      if (selectedService && selectedSlot && selectedDate) {
+        const [h, m] = selectedSlot.split(':').map(Number);
+        const endMins = h * 60 + m + selectedDuration;
+        const endH = Math.floor(endMins / 60);
+        const endM = endMins % 60;
+        summary.style.display = 'flex';
+        document.getElementById('slotSummaryText').textContent =
+          `${fmtTime(h, m)} – ${fmtTime(endH, endM)} · ${selectedService}`;
+        document.getElementById('slotDurText').textContent = `${selectedDuration} min`;
+        btn.disabled = false;
+        btn.textContent = '✅ Confirm Booking';
+      } else {
+        summary.style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = '✂️ Book a Slot';
+      }
+    }
+
+    // ── Confirm booking ──
+    async function confirmBooking() {
+      if (!selectedService) { alert('Please select a service first.'); return; }
+      if (!selectedDate) { alert('Please pick a date.'); return; }
+      if (!selectedSlot) { alert('Please pick a time slot.'); return; }
+
+      const btn = document.getElementById('bookBtn');
+      btn.disabled = true;
+      btn.textContent = 'Booking…';
+
+      const [h, m] = selectedSlot.split(':').map(Number);
+      const slotTime = `${selectedDate} ${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}:00`;
+      const endMins = h * 60 + m + selectedDuration;
+      const endH = Math.floor(endMins / 60);
+      const endM = endMins % 60;
+      const endTimeStr = `${fmtTime(endH, endM)}`;
+
+      try {
+        const res = await fetch('/api/queue', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            shop_id: shopId,
+            service: selectedService,
+            slot_time: slotTime,
+            slot_duration: selectedDuration
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          window.location.href = `booking-confirmation.html?shop_id=${shopId}&shop_name=${encodeURIComponent(shopName)}&service=${encodeURIComponent(selectedService)}&slot=${encodeURIComponent(fmtTime(h, m))}&slot_end=${encodeURIComponent(endTimeStr)}&date=${encodeURIComponent(selectedDate)}&dur=${selectedDuration}`;
+        } else {
+          alert('Booking failed: ' + (data.error || 'Unknown error'));
+          btn.disabled = false;
+          btn.textContent = '✅ Confirm Booking';
+        }
+      } catch (e) {
+        alert('Network error. Please try again.');
+        btn.disabled = false;
+        btn.textContent = '✅ Confirm Booking';
+      }
+    }
+
+    loadShopInfo();
+    updateCtaBar();
+  </script>
+</body>
+
+</html>

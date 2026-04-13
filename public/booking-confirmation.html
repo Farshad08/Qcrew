@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qcrew | Booking Confirmed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .confirm-wrap {
+      padding: 28px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .check-circle {
+      width: 80px;
+      height: 80px;
+      background: var(--success);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 32px rgba(34, 197, 94, 0.35);
+      animation: popIn 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      transform: scale(0);
+    }
+
+    @keyframes popIn {
+      to { transform: scale(1); }
+    }
+
+    .confirm-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    .confirm-sub {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 24px;
+    }
+
+    /* ── Ticket card ── */
+    .ticket-card {
+      background: var(--navy);
+      border-radius: 18px;
+      padding: 22px 20px;
+      color: var(--white);
+      width: 100%;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .ticket-card::before {
+      content: '✂️';
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      font-size: 3rem;
+      opacity: 0.12;
+    }
+
+    .ticket-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      border-bottom: 1.5px dashed rgba(255,255,255,0.12);
+      padding-bottom: 16px;
+    }
+
+    .ticket-q-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .ticket-shop-name {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .ticket-shop-city {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ── Time slot highlight ── */
+    .slot-highlight {
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .slot-highlight-time {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    .slot-highlight-arrow {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.65);
+      margin: 0 8px;
+    }
+
+    .slot-highlight-date {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .slot-highlight-dur {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-top: 6px;
+    }
+
+    .ticket-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .tg-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: rgba(255, 255, 255, 0.45);
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+
+    .tg-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    /* ── Steps ── */
+    .steps-card {
+      width: 100%;
+      text-align: left;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary-glow);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-txt {
+      font-size: 0.85rem;
+      color: var(--dark);
+      font-weight: 500;
+      padding-top: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+        </svg>
+        <span class="brand-q">Q</span>crew
+      </div>
+    </header>
+
+    <div class="confirm-wrap">
+      <!-- Check animation -->
+      <div class="check-circle">
+        <svg
+          style="width:40px;height:40px;stroke:white;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none;"
+          viewBox="0 0 24 24">
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      </div>
+
+      <div class="confirm-title">Slot Booked! 🎉</div>
+      <div class="confirm-sub">Your appointment is confirmed.</div>
+
+      <!-- Ticket -->
+      <div class="ticket-card">
+        <div class="ticket-header">
+          <div class="ticket-q-icon">✂️</div>
+          <div>
+            <div class="ticket-shop-name" id="shopNameDisplay">Loading…</div>
+            <div class="ticket-shop-city" id="shopCityDisplay"></div>
+          </div>
+        </div>
+
+        <!-- Time slot highlight -->
+        <div class="slot-highlight">
+          <div class="slot-highlight-time">
+            <span id="slotStartDisplay">—</span>
+            <span class="slot-highlight-arrow">→</span>
+            <span id="slotEndDisplay">—</span>
+          </div>
+          <div class="slot-highlight-date" id="slotDateDisplay">—</div>
+          <div class="slot-highlight-dur" id="slotDurDisplay">—</div>
+        </div>
+
+        <div class="ticket-grid">
+          <div class="tg-item">
+            <div class="tg-label">Service</div>
+            <div class="tg-value" id="serviceDisplay">—</div>
+          </div>
+          <div class="tg-item">
+            <div class="tg-label">Booked At</div>
+            <div class="tg-value" id="bookedAtDisplay">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next steps -->
+      <div class="steps-card card" style="width:100%;margin-bottom:20px;">
+        <h3
+          style="margin-bottom:14px;font-size:0.9rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;">
+          What's Next</h3>
+        <div class="step-row">
+          <div class="step-num">1</div>
+          <div class="step-txt">Save or screenshot this booking for reference</div>
+        </div>
+        <div class="step-row">
+          <div class="step-num">2</div>
+          <div class="step-txt">Arrive at the shop 5 minutes before your slot</div>
+        </div>
+        <div class="step-row" style="margin-bottom:0;">
+          <div class="step-num">3</div>
+          <div class="step-txt">Show this booking confirmation to the barber</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="margin-bottom:12px;" onclick="window.location.href='customer.html'">🏠 Back to Home</button>
+      <button class="btn btn-outline" onclick="window.location.href=`shop.html?id=${shopId}&name=${encodeURIComponent(shopName)}`">📅 View This Shop</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const shopId = params.get('shop_id') || '';
+    const shopName = params.get('shop_name') || 'the barber';
+    const service = params.get('service') || '—';
+    const slotStart = params.get('slot') || '—';
+    const slotEnd = params.get('slot_end') || '—';
+    const slotDate = params.get('date') || '';
+    const dur = params.get('dur') || '—';
+
+    document.getElementById('shopNameDisplay').textContent = shopName;
+    document.getElementById('serviceDisplay').textContent = service;
+    document.getElementById('slotStartDisplay').textContent = slotStart;
+    document.getElementById('slotEndDisplay').textContent = slotEnd;
+    document.getElementById('slotDurDisplay').textContent = `${dur} min`;
+
+    // Format date nicely
+    if (slotDate) {
+      const d = new Date(slotDate + 'T00:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diff = Math.round((d - today) / 86400000);
+      const dayLabel = diff === 0 ? 'Today' : diff === 1 ? 'Tomorrow' : d.toLocaleDateString('en-IN', { weekday: 'long' });
+      document.getElementById('slotDateDisplay').textContent =
+        `${dayLabel}, ${d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+    }
+
+    // Booked at time
+    const now = new Date();
+    document.getElementById('bookedAtDisplay').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Load shop city
+    async function loadShopInfo() {
+      if (!shopId) return;
+      try {
+        const res = await fetch(`/api/shops/${shopId}`);
+        const data = await res.json();
+        if (data.success && data.shop && data.shop.city) {
+          document.getElementById('shopCityDisplay').textContent = `📍 ${data.shop.city}`;
+        }
+      } catch { }
+    }
+
+    loadShopInfo();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qcrew | Smart Queue. Smart Time.</title>
+  <meta name="description" content="Skip the wait. Join your barbershop queue online with Qcrew.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ━━ Page layout ━━ */
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ━━ Hero ━━ */
+    .hero-banner {
+      background: linear-gradient(145deg, var(--navy) 0%, #2D1B3E 100%);
+      padding: 40px 24px 52px;
+      text-align: center;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: rgba(229,0,30,0.12);
+      border-radius: 50%;
+    }
+
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 36px;
+      background: var(--white);
+      border-radius: 36px 36px 0 0;
+    }
+
+    .hero-logo {
+      width: 72px; height: 72px;
+      background: var(--primary);
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-red);
+      animation: logoAppear 0.5s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    @keyframes logoAppear {
+      from { transform: scale(0.7) rotate(-10deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .hero-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      color: var(--white);
+    }
+
+    .hero-sub {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 4px;
+    }
+
+    .feature-pills {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .feature-pill {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.73rem;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    /* ━━ Card ━━ */
+    .login-card {
+      background: var(--white);
+      flex: 1;
+      padding: 28px 24px 40px;
+    }
+
+    /* ━━ Step container with slide animation ━━ */
+    .steps-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step {
+      display: none;
+      animation: stepIn 0.3s cubic-bezier(.33,1,.68,1);
+    }
+
+    .step.active { display: block; }
+
+    @keyframes stepIn {
+      from { transform: translateX(32px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+
+    @keyframes stepBack {
+      from { transform: translateX(-32px); opacity: 0; }
+      to   { transform: translateX(0);      opacity: 1; }
+    }
+
+    .step.going-back { animation: stepBack 0.3s cubic-bezier(.33,1,.68,1); }
+
+    /* ━━ User type tabs ━━ */
+    .user-tabs {
+      display: flex;
+      background: var(--off-white);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+      gap: 2px;
+    }
+
+    .user-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: var(--gray);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .user-tab.active {
+      background: var(--white);
+      color: var(--dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ━━ Step heading ━━ */
+    .step-heading {
+      margin-bottom: 20px;
+    }
+
+    .step-heading h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .step-heading p {
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    /* ━━ Input with icon ━━ */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .input-wrap input {
+      padding-left: 46px;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      width: 18px; height: 18px;
+      pointer-events: none;
+    }
+
+    .input-wrap .toggle-pw {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--gray);
+      padding: 4px;
+      font-size: 0.85rem;
+    }
+
+    /* ━━ User avatar chip (step 2 customer) ━━ */
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--off-white);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      border: 1.5px solid var(--border);
+    }
+
+    .user-chip-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .user-chip-contact {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--dark);
+      flex: 1;
+    }
+
+    .user-chip-change {
+      font-size: 0.78rem;
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ━━ Error msg ━━ */
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.82rem;
+      margin: -6px 0 12px;
+      padding: 10px 12px;
+      background: #FEE2E2;
+      border-radius: 8px;
+      border-left: 3px solid var(--danger);
+      display: none;
+    }
+
+    /* ━━ Back link ━━ */
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray);
+      cursor: pointer;
+      margin-bottom: 20px;
+      width: fit-content;
+      transition: color 0.15s;
+    }
+
+    .back-link:hover { color: var(--dark); }
+
+    /* ━━ Divider ━━ */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0;
+      color: var(--gray);
+      font-size: 0.8rem;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ━━ Admin button on customer tab ━━ */
+    .admin-cta {
+      width: 100%;
+      background: none;
+      border: 1.5px solid var(--navy);
+      color: var(--navy);
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .admin-cta:hover {
+      background: var(--navy);
+      color: white;
+    }
+
+    /* ━━ Admin shop picker overlay ━━ */
+    .shop-picker-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 300;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .shop-picker-overlay.open { display: flex; }
+
+    .shop-picker-sheet {
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      width: 100%;
+      max-width: 480px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.28s cubic-bezier(.33,1,.68,1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .picker-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 12px auto 18px;
+    }
+
+    .picker-header { padding: 8px 20px 0; flex-shrink: 0; }
+    .picker-title  { font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
+    .picker-sub    { font-size: 0.82rem; color: var(--gray); margin-bottom: 14px; }
+
+    .picker-search {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+      outline: none;
+      font-family: inherit;
+      background: var(--off-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23888BA0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;
+    }
+
+    .picker-search:focus { border-color: var(--primary); }
+
+    .picker-list-wrap { flex: 1; overflow-y: auto; padding: 0 20px; }
+    .picker-footer {
+      padding: 12px 20px 28px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+      background: var(--white);
+    }
+
+    .city-group-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--gray);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 8px 0 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 6px;
+    }
+
+    .admin-shop-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-bottom: 4px;
+      border: 1.5px solid transparent;
+    }
+
+    .admin-shop-row:hover { background: var(--off-white); }
+
+    .admin-shop-row.selected {
+      background: var(--primary-glow);
+      border-color: var(--primary);
+    }
+
+    .admin-shop-avatar {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--navy);
+      color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .admin-shop-row.selected .admin-shop-avatar {
+      background: var(--primary);
+    }
+
+    .admin-shop-name {
+      font-size: 0.9rem; font-weight: 700; color: var(--dark);
+    }
+
+    .admin-shop-city {
+      font-size: 0.75rem; color: var(--gray); margin-top: 2px;
+    }
+
+    /* ━━ Admin password sheet (second step inside picker) ━━ */
+    .admin-pw-sheet {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 400;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .admin-pw-sheet.open { display: flex; }
+
+    .admin-pw-inner {
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 480px;
+      padding: 16px 24px 40px;
+      animation: slideUp 0.28s cubic-bezier(.33,1,.68,1);
+    }
+
+    .admin-pw-shop-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--navy);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+
+    .admin-pw-shop-chip .chip-avatar {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 800; font-size: 0.9rem;
+    }
+
+    .admin-pw-shop-chip .chip-info { flex: 1; }
+    .admin-pw-shop-chip .chip-name { font-size: 0.92rem; font-weight: 800; color: white; }
+    .admin-pw-shop-chip .chip-city { font-size: 0.72rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+    /* ━━ Password strength indicator ━━ */
+    .pw-strength-bar {
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .pw-strength-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+      width: 0;
+    }
+
+    /* ━━ Security badge ━━ */
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      font-size: 0.78rem;
+      color: #15803d;
+      font-weight: 600;
+    }
+
+    /* ━━ OTP boxes (numeric PIN) ━━ */
+    .pin-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .pin-box {
+      width: 52px; height: 60px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--dark);
+      text-align: center;
+      background: var(--off-white);
+      outline: none;
+      transition: all 0.18s;
+      caret-color: transparent;
+    }
+
+    .pin-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+      background: var(--white);
+    }
+
+    .pin-box.filled {
+      border-color: var(--primary);
+      background: var(--white);
+    }
+
+    /* ━━ Attempt counter ━━ */
+    .attempts-left {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--danger);
+      font-weight: 600;
+      min-height: 20px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container login-page">
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-logo">
+        <svg style="width:36px;height:36px;stroke:white;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;fill:none;" viewBox="0 0 24 24">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="hero-title"><span style="color:var(--primary)">Q</span>crew</div>
+      <div class="hero-sub">Smart Queue. Smart Time.</div>
+      <div class="feature-pills">
+        <span class="feature-pill">✂️ Book Instantly</span>
+        <span class="feature-pill">⏱️ Live Wait</span>
+        <span class="feature-pill">📍 All India</span>
+      </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+      <!-- User type tabs -->
+      <div class="user-tabs">
+        <button class="user-tab active" id="tabCustomer" onclick="switchUserType('customer')">👤 Customer</button>
+        <button class="user-tab" id="tabAdmin" onclick="switchUserType('admin')">🏪 Shop Owner</button>
+      </div>
+
+      <!-- ════ CUSTOMER FLOW ════ -->
+      <div id="customerFlow">
+        <div class="steps-wrap">
+
+          <!-- Step C1: Enter phone/email -->
+          <div class="step active" id="stepC1">
+            <div class="step-heading">
+              <h2>Sign in</h2>
+              <p>Enter your phone number or email to continue</p>
+            </div>
+
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.77 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 17z"/>
+              </svg>
+              <input type="text" id="cContact" placeholder="Phone number or email" autocomplete="username" autofocus>
+            </div>
+            <p class="error-msg" id="errC1"></p>
+            <button class="btn btn-primary" id="btnC1" onclick="submitPhone()">Next →</button>
+          </div>
+
+          <!-- Step C2a: Returning user — welcome back -->
+          <div class="step" id="stepC2">
+            <div class="back-link" onclick="goBack('C')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              Back
+            </div>
+            <div class="user-chip" id="cContactChip">
+              <div class="user-chip-avatar" id="cChipAvatar">?</div>
+              <div class="user-chip-contact" id="cChipContact"></div>
+              <span class="user-chip-change" onclick="goBack('C')">Change</span>
+            </div>
+            <div class="step-heading">
+              <h2 id="c2Heading">Welcome back! 👋</h2>
+              <p id="c2Sub">You're already registered. Click below to continue.</p>
+            </div>
+            <p class="error-msg" id="errC2"></p>
+            <button class="btn btn-primary" id="btnC2" onclick="loginCustomer()">Sign in →</button>
+          </div>
+
+          <!-- Step C2b: New user — enter name -->
+          <div class="step" id="stepC3">
+            <div class="back-link" onclick="goBack('C')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              Back
+            </div>
+            <div class="user-chip">
+              <div class="user-chip-avatar" id="cChipAvatar3">?</div>
+              <div class="user-chip-contact" id="cChipContact3"></div>
+              <span class="user-chip-change" onclick="goBack('C')">Change</span>
+            </div>
+            <div class="step-heading">
+              <h2>Create account</h2>
+              <p>Enter your name to get started with Qcrew</p>
+            </div>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+              <input type="text" id="cName" placeholder="Your full name" autocomplete="name">
+            </div>
+            <p class="error-msg" id="errC3"></p>
+            <button class="btn btn-primary" id="btnC3" onclick="registerCustomer()">Create Account →</button>
+          </div>
+
+        </div>
+
+        <!-- Admin CTA (under customer form) -->
+        <div class="divider">or</div>
+        <button class="admin-cta" onclick="switchUserType('admin')">
+          🏪 Login as Shop Owner
+        </button>
+      </div>
+
+      <!-- ════ ADMIN FLOW ════ -->
+      <div id="adminFlow" style="display:none;">
+        <div class="security-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Admin access — secured with password
+        </div>
+
+        <div class="step-heading">
+          <h2>Select your shop</h2>
+          <p>Choose your barbershop to continue</p>
+        </div>
+
+        <button class="btn btn-primary" onclick="openShopPicker()" id="openPickerBtn">
+          🏪 Choose Barbershop
+        </button>
+
+        <div class="divider">or</div>
+        <button class="admin-cta" onclick="switchUserType('customer')" style="border-color:var(--border);color:var(--gray);">
+          👤 Customer Login instead
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Admin Shop Picker Sheet ═══ -->
+  <div class="shop-picker-overlay" id="shopPickerOverlay">
+    <div class="shop-picker-sheet">
+      <div class="picker-header">
+        <div class="picker-handle"></div>
+        <div class="picker-title">Select Your Shop</div>
+        <div class="picker-sub">Choose the barbershop you manage</div>
+        <input type="text" class="picker-search" id="pickerSearch" placeholder="Search shop or city…">
+      </div>
+      <div class="picker-list-wrap">
+        <div id="shopPickerList">
+          <p style="color:var(--gray);text-align:center;padding:20px 0;">⏳ Loading shops…</p>
+        </div>
+      </div>
+      <div class="picker-footer" id="pickerFooter" style="display:none;">
+        <button class="btn btn-primary" id="pickerConfirmBtn" onclick="proceedToPassword()">
+          Continue →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Admin PIN Entry Sheet ═══ -->
+  <div class="admin-pw-sheet" id="adminPwSheet">
+    <div class="admin-pw-inner">
+      <div class="picker-handle"></div>
+
+      <!-- Selected shop chip -->
+      <div class="admin-pw-shop-chip" id="adminPwChip">
+        <div class="chip-avatar" id="chipAvatarLetter">?</div>
+        <div class="chip-info">
+          <div class="chip-name" id="chipShopName">Shop</div>
+          <div class="chip-city" id="chipShopCity">City</div>
+        </div>
+        <button onclick="closePwSheet()" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.5);font-size:1rem;">✕</button>
+      </div>
+
+      <div class="step-heading">
+        <h2>🔐 Enter Admin PIN</h2>
+        <p>Enter your 4-digit security PIN to access the dashboard</p>
+      </div>
+
+      <div class="pin-row" id="pinRow">
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="pin0">
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="pin1">
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="pin2">
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" id="pin3">
+      </div>
+
+      <div class="attempts-left" id="attemptsMsg"></div>
+
+      <p class="error-msg" id="errAdmin" style="display:none;"></p>
+
+      <button class="btn btn-primary" id="btnAdminLogin" onclick="submitAdminPin()" disabled>
+        🔓 Unlock Dashboard
+      </button>
+
+      <p style="text-align:center;margin-top:14px;font-size:0.78rem;color:var(--gray);">
+        Forgot PIN? Contact the system administrator.
+      </p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Redirect if already logged in
+    const stored = localStorage.getItem('qcrew_user');
+    if (stored) {
+      const u = JSON.parse(stored);
+      window.location.href = u.role === 'admin' ? 'admin.html' : 'customer.html';
+    }
+
+    /* ══════════════════════════════════
+       User type tab switching
+    ══════════════════════════════════ */
+    let currentUserType = 'customer';
+
+    function switchUserType(type) {
+      currentUserType = type;
+      document.getElementById('tabCustomer').classList.toggle('active', type === 'customer');
+      document.getElementById('tabAdmin').classList.toggle('active', type === 'admin');
+      document.getElementById('customerFlow').style.display = type === 'customer' ? 'block' : 'none';
+      document.getElementById('adminFlow').style.display = type === 'admin' ? 'block' : 'none';
+    }
+
+    /* ══════════════════════════════════
+       Customer Flow — Step machine
+    ══════════════════════════════════ */
+    let customerContact = '';
+
+    function showStep(id, goingBack = false) {
+      document.querySelectorAll('.step').forEach(s => { s.classList.remove('active', 'going-back'); });
+      const target = document.getElementById(id);
+      if (goingBack) target.classList.add('going-back');
+      target.classList.add('active');
+    }
+
+    function goBack(flow) {
+      if (flow === 'C') showStep('stepC1', true);
+    }
+
+    function setContactChip(contact) {
+      const letter = contact[0].toUpperCase();
+      ['cChipAvatar', 'cChipAvatar3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = letter;
+      });
+      ['cChipContact', 'cChipContact3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = contact;
+      });
+    }
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideError(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    async function submitPhone() {
+      const contact = document.getElementById('cContact').value.trim();
+      if (!contact) { showError('errC1', 'Please enter your phone number or email.'); return; }
+
+      hideError('errC1');
+      customerContact = contact;
+
+      const btn = document.getElementById('btnC1');
+      btn.disabled = true; btn.textContent = 'Checking…';
+
+      try {
+        // Check if user exists
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // Existing user
+          setContactChip(contact);
+          document.getElementById('c2Heading').textContent = `Welcome back! 👋`;
+          document.getElementById('c2Sub').textContent = `Signing in as ${data.user.name || contact}`;
+          showStep('stepC2');
+          // Store immediately since user exists
+          window._pendingUser = data.user;
+        } else {
+          // New user — need name
+          setContactChip(contact);
+          showStep('stepC3');
+          setTimeout(() => document.getElementById('cName').focus(), 350);
+        }
+      } catch {
+        showError('errC1', 'Server connection error. Is the server running?');
+      } finally {
+        btn.disabled = false; btn.textContent = 'Next →';
+      }
+    }
+
+    async function loginCustomer() {
+      if (!window._pendingUser) return;
+      const btn = document.getElementById('btnC2');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+      hideError('errC2');
+      localStorage.setItem('qcrew_user', JSON.stringify(window._pendingUser));
+      window.location.href = window._pendingUser.role === 'admin' ? 'admin.html' : 'customer.html';
+    }
+
+    async function registerCustomer() {
+      const name = document.getElementById('cName').value.trim();
+      if (!name) { showError('errC3', 'Please enter your full name.'); return; }
+
+      hideError('errC3');
+      const btn = document.getElementById('btnC3');
+      btn.disabled = true; btn.textContent = 'Creating account…';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact: customerContact, name })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('qcrew_user', JSON.stringify(data.user));
+          window.location.href = 'customer.html';
+        } else {
+          showError('errC3', data.error || 'Registration failed.');
+          btn.disabled = false; btn.textContent = 'Create Account →';
+        }
+      } catch {
+        showError('errC3', 'Server error. Please try again.');
+        btn.disabled = false; btn.textContent = 'Create Account →';
+      }
+    }
+
+    // Enter key support
+    document.getElementById('cContact').addEventListener('keydown', e => { if (e.key === 'Enter') submitPhone(); });
+    document.getElementById('cName').addEventListener('keydown', e => { if (e.key === 'Enter') registerCustomer(); });
+
+    /* ══════════════════════════════════
+       Admin — Shop Picker
+    ══════════════════════════════════ */
+    let allAdmins = [], selectedAdmin = null;
+
+    async function openShopPicker() {
+      document.getElementById('shopPickerOverlay').classList.add('open');
+      if (allAdmins.length === 0) await loadAdmins();
+      else renderPicker(allAdmins);
+    }
+
+    function closeShopPicker() {
+      document.getElementById('shopPickerOverlay').classList.remove('open');
+      selectedAdmin = null;
+      document.getElementById('pickerFooter').style.display = 'none';
+    }
+
+    document.getElementById('shopPickerOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeShopPicker();
+    });
+
+    async function loadAdmins() {
+      document.getElementById('shopPickerList').innerHTML = '<p style="color:var(--gray);text-align:center;padding:20px 0;">⏳ Loading shops…</p>';
+      try {
+        const res = await fetch('/api/admins');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.success && data.admins.length > 0) {
+          allAdmins = data.admins;
+          renderPicker(allAdmins);
+        } else {
+          document.getElementById('shopPickerList').innerHTML = '<p style="color:var(--danger);text-align:center;">No admin accounts found.</p>';
+        }
+      } catch (err) {
+        document.getElementById('shopPickerList').innerHTML = `<p style="color:var(--danger);text-align:center;">Failed to load. Is the server running?</p>`;
+      }
+    }
+
+    loadAdmins();
+
+    const CITY_ICON = { Mumbai: '🏙️', Delhi: '🏛️', Bangalore: '🌳', Chennai: '🌊', Hyderabad: '💎', Kolkata: '🎨', Pune: '🎓', Jaipur: '🏰', Kochi: '🌴', Ahmedabad: '🏗️' };
+
+    function renderPicker(admins) {
+      const list = document.getElementById('shopPickerList');
+      if (!admins.length) { list.innerHTML = '<p style="color:var(--gray);text-align:center;padding:20px 0;">No shops found.</p>'; return; }
+
+      const byCity = {};
+      admins.forEach(a => {
+        const city = a.city || 'Other';
+        if (!byCity[city]) byCity[city] = [];
+        byCity[city].push(a);
+      });
+
+      let html = '';
+      Object.keys(byCity).sort().forEach(city => {
+        html += `<div class="city-group-label">${CITY_ICON[city] || '📍'}  ${city}</div>`;
+        byCity[city].forEach(a => {
+          const initial = a.shop_name.charAt(0);
+          const isSel = selectedAdmin && selectedAdmin.contact === a.contact;
+          html += `<div class="admin-shop-row ${isSel ? 'selected' : ''}" onclick="selectAdminRow('${a.contact}', '${a.shop_name.replace(/'/g,"\\'")}', '${a.city || ''}')">
+            <div class="admin-shop-avatar">${initial}</div>
+            <div style="flex:1;">
+              <div class="admin-shop-name">${a.shop_name}</div>
+              <div class="admin-shop-city">📍 ${a.city || '—'}</div>
+            </div>
+            ${isSel ? '<span style="color:var(--primary);font-size:1.2rem;">✓</span>' : ''}
+          </div>`;
+        });
+      });
+      list.innerHTML = html;
+    }
+
+    function selectAdminRow(contact, shopName, city) {
+      selectedAdmin = { contact, shopName, city };
+      const term = document.getElementById('pickerSearch').value.toLowerCase();
+      renderPicker(getFilteredAdmins());
+      document.getElementById('pickerFooter').style.display = 'block';
+      document.getElementById('pickerConfirmBtn').textContent = `Continue as ${shopName} Owner →`;
+    }
+
+    function getFilteredAdmins() {
+      const term = document.getElementById('pickerSearch').value.toLowerCase();
+      return allAdmins.filter(a =>
+        a.shop_name.toLowerCase().includes(term) ||
+        (a.city || '').toLowerCase().includes(term) ||
+        a.contact.toLowerCase().includes(term)
+      );
+    }
+
+    document.getElementById('pickerSearch').addEventListener('input', () => {
+      if (!allAdmins.length) return;
+      renderPicker(getFilteredAdmins());
+    });
+
+    /* ══════════════════════════════════
+       Admin — PIN Entry
+    ══════════════════════════════════ */
+    let adminAttempts = 0;
+    const MAX_ATTEMPTS = 5;
+    // Default PIN for all admins is '1234' — change this or move to server-side
+    // In production, PIN is validated on the server
+    const ADMIN_PIN = '1234';
+
+    function proceedToPassword() {
+      if (!selectedAdmin) return;
+
+      // Save data BEFORE closeShopPicker() nulls out selectedAdmin
+      const adminContact  = selectedAdmin.contact;
+      const adminShopName = selectedAdmin.shopName;
+      const adminCity     = selectedAdmin.city || '';
+
+      closeShopPicker();
+
+      // Restore the selected admin for PIN submission
+      selectedAdmin = { contact: adminContact, shopName: adminShopName, city: adminCity };
+
+      // Setup chip
+      document.getElementById('chipAvatarLetter').textContent = adminShopName.charAt(0);
+      document.getElementById('chipShopName').textContent = adminShopName;
+      document.getElementById('chipShopCity').textContent = adminCity;
+
+      // Reset PIN inputs
+      for (let i = 0; i < 4; i++) {
+        const box = document.getElementById(`pin${i}`);
+        box.value = '';
+        box.classList.remove('filled');
+      }
+      document.getElementById('btnAdminLogin').disabled = true;
+      document.getElementById('attemptsMsg').textContent = '';
+      hideAdminError();
+
+      document.getElementById('adminPwSheet').classList.add('open');
+      setTimeout(() => document.getElementById('pin0').focus(), 350);
+    }
+
+    function closePwSheet() {
+      document.getElementById('adminPwSheet').classList.remove('open');
+      adminAttempts = 0;
+    }
+
+    // PIN box keyboard logic
+    for (let i = 0; i < 4; i++) {
+      const box = document.getElementById(`pin${i}`);
+
+      box.addEventListener('keydown', e => {
+        if (e.key === 'Backspace') {
+          box.value = '';
+          box.classList.remove('filled');
+          if (i > 0) document.getElementById(`pin${i - 1}`).focus();
+          updatePinBtn();
+          return;
+        }
+        if (e.key === 'Enter') { submitAdminPin(); return; }
+        if (!/^\d$/.test(e.key)) { e.preventDefault(); return; }
+      });
+
+      box.addEventListener('input', e => {
+        const val = box.value.replace(/\D/g, '').slice(-1);
+        box.value = val;
+        if (val) {
+          box.classList.add('filled');
+          if (i < 3) document.getElementById(`pin${i + 1}`).focus();
+        } else {
+          box.classList.remove('filled');
+        }
+        updatePinBtn();
+      });
+    }
+
+    function updatePinBtn() {
+      const allFilled = [0,1,2,3].every(i => document.getElementById(`pin${i}`).value !== '');
+      document.getElementById('btnAdminLogin').disabled = !allFilled;
+    }
+
+    function getEnteredPin() {
+      return [0,1,2,3].map(i => document.getElementById(`pin${i}`).value).join('');
+    }
+
+    function showAdminError(msg) {
+      const el = document.getElementById('errAdmin');
+      el.textContent = msg; el.style.display = 'block';
+    }
+
+    function hideAdminError() {
+      document.getElementById('errAdmin').style.display = 'none';
+    }
+
+    function shakePins() {
+      const row = document.getElementById('pinRow');
+      row.style.animation = 'none';
+      row.offsetHeight;
+      row.style.animation = 'shake 0.4s cubic-bezier(.36,.07,.19,.97)';
+      for (let i = 0; i < 4; i++) {
+        const box = document.getElementById(`pin${i}`);
+        box.value = '';
+        box.classList.remove('filled');
+      }
+      setTimeout(() => document.getElementById('pin0').focus(), 400);
+    }
+
+    async function submitAdminPin() {
+      const pin = getEnteredPin();
+      if (pin.length < 4) return;
+
+      const btn = document.getElementById('btnAdminLogin');
+      btn.disabled = true; btn.textContent = 'Verifying…';
+      hideAdminError();
+
+      // Check attempts
+      adminAttempts++;
+      const remaining = MAX_ATTEMPTS - adminAttempts;
+
+      // Validate PIN against server
+      try {
+        const res = await fetch('/api/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contact: selectedAdmin.contact, pin })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem('qcrew_user', JSON.stringify(data.user));
+          btn.textContent = '✓ Access Granted!';
+          btn.style.background = 'var(--success)';
+          setTimeout(() => window.location.href = 'admin.html', 500);
+        } else {
+          if (remaining <= 0) {
+            showAdminError('Too many wrong attempts. Please wait and try again.');
+            btn.textContent = '🔒 Locked';
+            return;
+          }
+          shakePins();
+          showAdminError(`Incorrect PIN. ${remaining} attempt${remaining !== 1 ? 's' : ''} left.`);
+          document.getElementById('attemptsMsg').textContent = remaining <= 2
+            ? `⚠️ ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining`
+            : '';
+          btn.disabled = false; btn.textContent = '🔓 Unlock Dashboard';
+          updatePinBtn();
+        }
+      } catch {
+        showAdminError('Server error. Please try again.');
+        btn.disabled = false; btn.textContent = '🔓 Unlock Dashboard';
+      }
+    }
+  </script>
+
+  <style>
+    @keyframes shake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60% { transform: translateX(6px); }
+    }
+  </style>
+</body>
+</html>
